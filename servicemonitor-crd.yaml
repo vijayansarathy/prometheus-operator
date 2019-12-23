@@ -1,0 +1,30 @@
+#
+# The ServiceMonitor custom resource definition (CRD) allows to declaratively define how a dynamic set of services should be monitored.
+# Which services are selected to be monitored with the desired configuration is defined using label selections.
+# For Prometheus server to monitor any application within Kubernetes an Endpoints object needs to exist. 
+# Endpoints objects are essentially lists of IP addresses. Typically an Endpoints object is populated by a Service object. A Service object discovers Pods by a label selector and adds those to the Endpoints object.
+# The ServiceMonitor in turn discovers those Endpoints objects and configures Prometheus to monitor those Pods.
+# The "endpoints" section of the ServiceMonitorSpec, is used to configure which ports of these Endpoints are going to be scraped for metrics
+# Both ServiceMonitors as well as discovered service targets may come from any namespace
+# Using the "serviceMonitorNamespaceSelector" section of the PrometheusSpec, one can restrict the namespaces ServiceMonitors are selected from by the respective Prometheus server. 
+# Using the "namespaceSelector" section of the ServiceMonitorSpec, one can restrict the namespaces the Endpoints objects are allowed to be discovered from. 
+#
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: bosear
+  name: recommender-svc-monitor
+  labels:
+    category: web-service
+    monitor: prometheus  
+spec:
+  namespaceSelector:
+    matchNames:
+    - bosear
+  selector:
+    matchLabels:
+      svc: recommender-svc
+  endpoints:
+  - port: web
+    path: /metrics
+    interval: 15s

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: monitoring
+  name: busybox
+  labels:
+    app: busybox
+spec:
+  containers:
+  - image: busybox
+    volumeMounts:
+    - name: prometheus
+      mountPath: "/etc/prometheus"
+      readOnly: true
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: busybox
+  restartPolicy: Always
+  volumes:
+  - name: prometheus
+    secret:
+      secretName: prometheus-prometheus-k8s

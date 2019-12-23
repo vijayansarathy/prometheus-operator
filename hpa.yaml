@@ -1,0 +1,34 @@
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2beta1
+metadata:
+  name: recommender-app-hpa
+  namespace: bosear
+spec:
+  scaleTargetRef:
+    #
+    # Point the HPA at the application that needs to be autoscaled.
+    #
+    apiVersion: apps/v1
+    kind: Deployment
+    name: recommender-app
+  #
+  # Specify the minimum and maximum number of replicas
+  #
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  #
+  # The configuration that is specified here determines how the custom metrics adapter is queried.
+  # In this case, we want scaling to be performed based on a Prometheus Counter metric thst is collected by each Pod
+  # We want the custom metrics adapter to take an average of the metrics across all pods controlled by the autoscaling target
+  #
+  - type: Pods
+    pods:
+      #
+      # Note that this is not the name of the Prometheus metric in the application.
+      # Prometheus metrics such as a Counter is converted into a rate-based metric by the adapter and assigned a different name
+      # The metric name here corresponds to the custom metric name in the adapter
+      # Target value specified here corresponds to 500 milli-requests per second
+      #
+      metricName: recommendation_requests_per_second 
+      targetAverageValue: 500m
