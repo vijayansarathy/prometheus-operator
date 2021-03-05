@@ -8,7 +8,12 @@ Connor Long (TAM, AWS)
 Timeplay has a real-time interactive gaming platform.
 The platform is a combination of workloads that run directly on EC2 as well as ECS/Fargate
 
-They deploy many player "rooms", each room serves 1000 players. Each room employs 10 - 15 independent cluster/service/tasks running on ECS/Fargate. Each task has its dedicated cluster + service. They use Application Auto Scaling with target tracking policy for autoscaling based on CPU usage. The number of tasks per room may scale out to anywhere from 30-50. They can have up to 100 rooms at peak which makes it a total of about 3000-5000 tasks/containers.
+- They deploy many player "rooms", each room serves 1000 players. 
+- Each room employs 10 - 15 independent cluster/service/tasks running on ECS/Fargate. 
+- Each task has its dedicated cluster + service. 
+- They use Application Auto Scaling with target tracking policy for autoscaling based on CPU usage. 
+- The number of tasks per room may scale out to anywhere from 30-50. 
+- They can have up to 100 rooms at peak which makes it a total of about 3000-5000 tasks/containers.
 
 In addition to ECS/Fargate tasks, each room also employs a number of EC2 instances. Most of them are of the t2|t3 family.
 Aside from these, they use g4dn.xlarge (no scaling) instance as their game server (one such instance can serve 2-3 rooms) and and one (or more) r5.4xlarge instances which run streaming components of their platform. Currently, they have 8 rooms (1,000 players/each) for production, but within a month or so, they will need 3 - 4 additional rooms with 1,000 players each.
