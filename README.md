@@ -1,27 +1,18 @@
 ### Additional Comments from Customer Meeting on March 10, 2021 ###
 
-- Customer has been running workloads on Kuberntes for about 4 years now, using self-managed cluster provisioned withe Kops
-- One of the main reasons for not adopting EKS earlier was that it was available only in 2 of the 3 regiosn that they needed it.
-- Their product is a data visualization platform that has 20+ years of technology knowhow built into it. The core component of their platform is called the Engine.
-- They have a need for directing incoming traffic to specific set of Pods. This sounded like similar to session stickiness. I could not fully fathom why they were doing this based on the coarse-grained explanations during the call. Anyway, this use case make service mesh like Istio unsuitable for their environment.
-- They are using MongoDB as the database. Using MongoDB Atlas, which is a hosted solution. 
-- Most of the important data resides on EFS volume which is mounted to the Engine pods.
-- They are using Classic LB in combination with NGINX Ingress Controller, with SSL termination at the Ingress Controller.
-- Heavy on websockets.
-- They have about 40 worker nodes in their cluster at stready state. Cluster capacity goes upto about 100 at peak.
-- Run a lot of batch workloads
+Customer wanted us to do a review of their current architecture on EKS.
+Here are the salient points.
 
-## Migration Challenges ###
-
-- Discussion about doing a zero-outage cutover from their Kops cluster to EKS
-- Suggested using Route53 weighted routing to handle the transition
-- All of their services are statelss and hence can be running simulatanoeusly in both clusters.
-- They can run both clusters in the same VPC and therefore share data on the EFS volumes between both the clusters.
-- The biggest challenge is their encryption service which makes use of HashiCorp Vauld under the covers and also perisists lots of encryption keys to DynamoDB. They mentioned that they can't have this service deployed in both clusters (Kops & EKS) and talking to the same DynamoDB database. 
-- Services in their cluster talk to this encryption service using K8s ClusterIP/DNS name. 
-- Suggested look into whether they can cut everything over to the EKS cluster except for the encryption service and have the service in EKS cluster talk to the encryption service in Kops cluster through an internal load balancer. Then, move the encryption service over to the EKS cluster. 
-- They said that they can tolerate an outage of 10 minutes at the most but that is the last resort.
-- They are going to do more investigations around the migration of this encruption service.
-
-## Next Steps ##
-Asked the customer to setup another meeting where we do a deep dive on exactly how this all-important encryption serivce works so that we can come up with a migration strategy. Reaching out to a HashiCorp Partner SA @ AWS who is well-versed in Vault to find out if he can offer any guidance.
+- They will start onboarding production workloads to EKS starting April.
+- They have had several cloud native applications developed in the last few years and they expect to migrat them all to EKS in about a year.
+- Some of their biggest applications (like Spectrum on Demand) have monlolithic architecture and it will not be ready until well into 2022 for migration.
+- Their applications depend on ~1TB of data that has to be provisioned either on EBS or EFS storage.
+- Using Terraform scripts for cluster provisioning
+- Each set of applications that make up a "product" are deployed into a separate namespace.
+- They provision a separate Ingress Controller + NLB per namespace so that they can easily segregate traffic amongst different products. They mentioned that they had some issues getting the source IP of request even with PROXY protocol turned on in NLB. I suggested that they move over to using NLB in IP mode which is a better deployment option and also supports preserving source IP without PROXY protocol.
+- They are using Let's Encrypt + Cert Manager for all their certificate needs. SSL traffic is terminated at the Ingress Controller.
+- Their Cloud Platform team which owns operating the cluster has developed their own home-grown service that development teams use to deploy services to the cluster. Essentially a wrapper on top of 'kubectl".
+- One of the vakue-add services their Cloud Platform team provides to other development teams is the ability to provision RDS database instanaces needed by microserivces developed by each team. However, the way they have implemented this did not look right to me. They ask the development teams to fill out sort of a request for RDS instance and then they use Terraform to provision this database before the team is ready to deploy their microservices. What they need here is a customer controller that can handle the provisioning of RDS. ACK service controller for RDS is not ready yet. I suggested that they look into K8s Service Catalog which is an extension API that enables applications running in K8s clusters to easily use external other manages services such as RDS.
+- They are using Prometheus, AlertManager and Grafana for metrics collection, monitoring and alerting.
+- They do plan on adopting Amazon Managed Prometheus and Managed Grafana when they are both GA and have 100% feature parity with self-managed Prom/Grafana.
+- They had some concerns about IP exhaustion in their VPC but, surprisingly, had not heard of the customer networking option supported by the VPC CNI plugin! Suggested that they use that and provisiong Pod IPs from a separate CIDR.
