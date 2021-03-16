@@ -25,3 +25,7 @@ The stack that was reviewed was a relatively straightforward deployment.
 - Suggested using IRSA and prevent access to IMDS.
 - They are sending all application logs to New Relic.
 - They were unsure about setting the right CPU/memory limits for their Pods. I suggested that they use VPA to right-size the Pods and use those resource limits.
+
+### Observation ###
+The customer is finally getting around to adopting EKS for their microservices and moving away from GKE. Their migration from monolith to microservices architecture is still underway and the service that power their US/Canada site are yet to be migrated over. So, we can expect to see more workloads launched on EKS over the course of this year.
+
