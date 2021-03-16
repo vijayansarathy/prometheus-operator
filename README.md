@@ -5,7 +5,7 @@ VistaPrint CARE Team, Tunis
 Cayce Marston - CSM
 Donny Omosa - TAM
 
-### Meeting Date: March 11, 2021###
+Meeting Date: March 11, 2021
 
 ### Bacground ###
 Cimpress sells cutomized products (business cards, yard signs, T-shirts, etc.) on their e-commerce web site. They have several subsidiaries and VistaPrint is the biggest one, accounting for nearly 60-70% of their revenues. They have developed MCP - Mass Customization Platform comprising of several dozen microservices that powers their e-commerce site. They have several development teams spread all over the US and Europe that have been given the autonomy to develop microservices with technologies of their choosing and expose them using well-defined APIs that other teams can easily consume.
