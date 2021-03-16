@@ -1,6 +1,5 @@
 ### Additional Notes from Customer Meeting on March 10, 2021 ###
 
-#### Background ####
 Precisely has 120+ AWS accounts running different containerized workloads using Kubernetes. Each workload uses its own EKS cluster and deployment pattern. Cloud Engineering team lead by Kyle Pause is building cloud native deployment service using EKS that would help broader Precisely organization become more efficient at developing, deploying, and operating applications in Kubernetes cluster. The team will also provide built in monitoring, alerting capabilities with ability for application owners to define own metrics to capture and alert. Emphasis is on operations, monitoring, cost optimization, and management of workloads.
 
 Customer wanted us to do a review of their current architecture on EKS.
