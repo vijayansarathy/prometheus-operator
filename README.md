@@ -1,14 +1,22 @@
-This is the third meeting in a continuing series of discussions with Pega about their migration from monolith to microservices journey.
+#### Meeting on March 18,2021 ####
 
-#### Discussion about Centralized Logging ####
-- Customer is a SaaS solution provider and have several hundred customers. In their legacy infrastructure, they provision services for each customer in an isolated environment using a separate VPC per customer.
-- They are contemplating a similar model of one EKS cluster per customer in their microservices architecture. This could lead to hundreds of EKS clusters. They want to better understand various aspects of multi-tenancy in Kubernetes before they decide to adopt it in their new architecture. 
-- Current EKS cluster is hosting services for just one tenant. The cluster has about 30 nodes and 250 pods. 
-- The main application in their stack is what they call a "Pega Instance" which is Java EE application running under Tomcat in a container.
-- Vast majority of the application logs are emitted by the Pega instance. They are currently using FluentD for shipping logds to various destinations - Splunk, CloudWatch, ElasticSearch
-- They mentioned that they ran into throttling issues with CloudWatch, laregly due to the logs sent over to CW from the Pega instance. This in turn puts back pressure on FluentD. Asked if they could provide specific metrics around the volume of logs emitted by Pega instance. Asked them to check if they have increased default limits on the account which are usually to set to relatively low values. Need to also consult with CloudWatch service team about this.
-- I recommended that they use Fluent Bit instead of FluenbtD as the former enables delivering logs at large scale in a more resource-efficient way. Referenced this [blog](https://aws.amazon.com/blogs/containers/fluent-bit-integration-in-cloudwatch-container-insights-for-eks/) from CloudWatch team.
-- FluentD's support for a larget number of output plugins was cited as the main reason why they are using it instead of Fluent Bit.
-- The Pega instance also writes logs to a file using Log4J. Asked them to look into whether the application is easily configurable so that these logs can be routed to STDOUT using Log4J's ConsoleAppender. They may have a reason for not emitting certain logs to STDOUT. In that case, I suggested that they write the logs to an EBS volume mounted to the container instead of writing to the write-layer of the image as it does today.
-- They are looking into building a log aggregator service which can grab the logs from FluentD and sink it to either Kinesis Data Stream or Kafka topic, separate the logs from each customer to a separate stream and be able to make the logs available to the customer on demand.
+#### Attendees ####
+Eric Bomarsi (SA)
+Viji Sarathy (SSA)
+Bhavna Sarathy (GTM)
+Omar Lari (BDM)
+Jake Farell (Acquia)
+Ed Brennan (Acquia)
+Matt Morley (Acquia)
+
+
+#### Limitations of Provisionong Mega Clusters ####
+
+The issue they have with provisioning large/mega clusters is not so much about the number of worker nodes that they might need as it is about running out of ENIs. Note that what we are talking about is not the [limits on primary and secondary ENIs attached to worker nodes](https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt) as pods land on them. This is related to the ENIs used by various AWS Managed Services such as ElastiCache, Aurors, EFS Mount Targats etc. Customer mentioned that they were informed that there is a hard limit of 1200. We need to discuss this internally with a Networking SME. During the course of discussions, the customer mentioned that they have 150 EKS clusters and provision about 35-40K persistent volumes. Need to clarify if those are the numbers they are looking at or if it is what they have today.
+
+#### Complaints about Secrets Manager Costs ####
+
+Customer pointed out that they estimate a monthly spend of 70K on storing database credentials, connection strings in AWS Secrets Managers for the 1000s of instances of Aurors database that they will provison. Today, they are using Percona MySQL. They have a single-tenant environment for each customer - basically dedicated EC2 instances. They retrieve the tenant-specific credentials for the databases from their storage and deploy that to the EC2 instance. When they move to running a Pod in EKS, then they will expose the credentials using K8s Secrets but the latter is seeded from secrets from AWS Secrets Manager. Customer's contention is that they should not have to incur any charges to make two AWS services (Pod in EKS and Aurora database) talk to each other. In their calculation, the use of AWS Secrets Manager for this use case should be free!! Not sure how to reconcile this. This is more of a sales issues than a technical one
+
+#### 
 
