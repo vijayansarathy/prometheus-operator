@@ -33,9 +33,9 @@ What the customer wants here is the support for tag-based permissions so that th
                 "dynamodb:*"
             ],
             "Resource": "*"
-            "Condition": {
+            "Condition" : {
                 "StringEquals": {
-                    "k8s:DatabaseTag/Customer": "XYZ"
+                    "k8s:DatabaseTag/Customer" : "XYZ"
                 }
             }
         }
