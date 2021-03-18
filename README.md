@@ -25,21 +25,21 @@ What the customer wants here is the support for tag-based permissions so that th
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:*"
-            ],
-            "Resource": "*"
-            "Condition" : {
-                "StringEquals": {
-                    "k8s:DatabaseTag/Customer" : "XYZ"
-                }
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Effect":"Allow",
+         "Action":[
+            "dynamodb:*"
+         ],
+         "Resource":"*",
+         "Condition":{
+            "StringEquals":{
+               "k8s:DatabaseTag/Customer":"XYZ"
             }
-        }
-    ]
+         }
+      }
+   ]
 }
 ```json
 
