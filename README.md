@@ -23,6 +23,7 @@ Customer pointed out that they estimate a monthly spend of 70K on storing databa
 #### Support for Tags in IRSA ####
 What the customer wants here is the support for tag-based permissions so that they can add tags to the **Condition** element of an IAM policy and tailor the policy’s permissions and limits its actions and resources. This will allow them to drastically cut down the number of IAM roles/polcies to be creates for using IRSA across 1000s of K8s service accounts. They would like to use K8s labels/annotations from the pods for these tags. Somethign as follows:
 
+<code>
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -40,7 +41,7 @@ What the customer wants here is the support for tag-based permissions so that th
         }
     ]
 }
-
+</code>
 
 
 
