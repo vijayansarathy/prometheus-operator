@@ -41,7 +41,7 @@ What the customer wants here is the support for tag-based permissions so that th
       }
    ]
 }
-
+```
 so that a Pod with a K8s label "DatabaseTag/Customer" set to the value "XYZ" will be allowed to have DynamoDB access
 
 
