@@ -48,6 +48,12 @@ so that a Pod with a K8s label "DatabaseTag/Customer" set to the value "XYZ" wil
 #### Dyanamic Provisioning of EFS Access Points ####
 This feature is expected to be supported by the [EFS CSI driver] (https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html) in Q2. In the multi-tenant deployment, data pertaining to each tenant will be stored in a separate access point on the same EFS file system. The customer wants the ability to take separate snapshots of each access point of an EFS volume. We have to check if this is on the roadmap of the EFS service team
 
+#### VPC Prefix Lists ####
+[Prefix Lists](https://docs.aws.amazon.com/vpc/latest/userguide/managed-prefix-lists.html) allows you to group multiple CIDR blocks into a single object, and use it as a reference in your security groups or route tables. This feature was unveiled in Jun 2020. Are there limitations to using it in the context of a security group attached to a Pod? Need to check to the EKS service team. 
+
+#### Support for ArgoCD ####
+Customer mentioned that they are using ArgoCD,for managing workflows, site upgrades and have built a robust environment around ArgoCD. There are no plans for ArgoCD in the EKS roadmap. Support for Flux v1 is expected to be rolled-out as a managed add-on. 
+
 
 
 
