@@ -17,8 +17,16 @@ Context: Kustomer architecture involves 100's of micro-services (ECS backed) alo
 Issues faced currently:
 - Being able to handle deployments across multiple services with different versions  across environments
 - Handling orchestration. 
-- Provision on the fly environments..
-- Lot of github
+- Provision on the fly environments.
+
+One of the main pain points for the customer is that they did not have a service discovery mechansim in their cluster. They were not familiar with AWS CloudMap and I gave them a overview of the service and also demonstrated a working example of ECS service discivery with CloudMap. Most of their services are stateless and can run on Fargate.
+
+Suggested the following approach as a potential/viable solution for provisioning disposable testing environments for development teams:
+- Provision a stable version of services that can be used by other dependent services and register them with CloudMap so that they are discoverable.
+- Leverage AWS CloudMap for registering other managed services like RDS instances used by services.
+- Provision ALBs in IP mode with target groups for services that need to be exposed for external access
+- Deploy services to ECS/Fargate and register with ALB so that development teams can test them and then tear them down.
+
 
 
 
