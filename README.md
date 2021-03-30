@@ -1,17 +1,25 @@
-#### Meeting on March 25,2021 ####
+#### Meeting on March 26,2021 ####
+Purpose of the meeting was to conduct a security review of customer EKS deployment.
+
 
 #### Attendees ####
-Steve Flinchbaugh (Kustomer)
-Patrick Ng ((Kustomer)
-Greifenberger, Jonathan (AWS)
-Cintron, Daniel (AWS)
+
+Holicka, George (HBC)
+Blyuss, Igor (HBC)
+Perri, Stephen (AWS)
+Bertolazzi, Renan (AWS)
 Sarathy, Bhavna (AWS)
 Sarathy, Viji (AWS)
 
 
 #### Background ####
-Kustomer has a customer service CRM platform
-Context: Kustomer architecture involves 100's of micro-services (ECS backed) along with large no of load balancers (around 70 ALB's) with multiple functionalities being tested by different teams at different intervals. The teams have been testing the services they develop in their respective local environments. Given the many dependencies that each team's services have, it is becoming increasingly difficult for them to do the testing locally.Customer is looking to create disposable QA environments that can be brought up and used for testing at will. 
+On Match 16, 2021 an attacker gained access to the access key used by the application in an EKS cluster. With this, the attacker was able to obtain read and write access to Secrets Manager using the AWS API, list and read S3 buckets, describe EC2 instance, and ECS/EKS clusters. AWS Support assisted with reviewing and containing the breach and was looked into reviewing VPC Flow logs and CloudTrail logs to identify how the attacker could have obtained the access key.
+
+#### Assesement from Zipline Team ####
+The customer engaged the Zipline Team and here is their take on the incident:
+What we provided was the best assessment the Zipline Team is able to provide based on the logs enabled and provided by the customer.  The customer did not have sufficient logging at several levels which would be required to determine with any certainty how this event occurred within the EKS application/container/cluster.  The Zipline Team provides analysis and assistance with AWS Service logs, even if the customer had had application logging enabled, we would not be able to provide application, container, or host-level forensics to diagnose an application vulnerability.  At this evidence provided indicates that the actor had access to 1 AWS user credential and 1 AWS instance credentials, with no apparent link between the two.  Although we can’t say with certainty, given that the EC2 instance credentials were used outside AWS and not on the instance itself, this indicates that there may have been a vulnerable application running on a container which leaked the instance credentials.  Furthermore, the customer’s security team informed the Zipline Team that SSH was not configured on the instance and no other known CLI method was enabled, this provides additional credibility to the indications that an application-level vulnerability may have allowed the actor to gain access to the instance credentials.
+
+
 
 #### Current Challenges ####
 Issues faced currently:
