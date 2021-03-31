@@ -21,7 +21,7 @@ Customer neeed advice on how best to use a CloudWatch metric for autoscaling wor
 - They also clarified that when they use AWS CLI (**aws cloudwatch get-metric-data**) to compute the metric values with the same metric expressions, the values were OK.
 - The details of the conversation with the customer and some of my suggestions are capture in this [Github issue](https://github.com/awslabs/k8s-cloudwatch-adapter/issues/76)
 
-Bottom line is that the customer issue happens to be something related to the way the adpater works and they are asking for official support from AWS for this adapter because they intend to use it for other autoscaling scenarios in EKS clusters. The project was published under the awslabs Github organization. AFAIK, AWS does not officially support projects under this org. It is open source after all and the code is not complex and so I provided some guidance to the customer about making some simple code changes and trying a few things wit their own build. But it is all strictly _caveat emptor_.
+Bottom line is that the customer issue happens to be something related to the way the adpater works and they are asking for official support from AWS for this adapter because they intend to use it for other autoscaling scenarios in EKS clusters. The project was published under the **awslabs** Github organization and does not even have maintainer at this time. AFAIK, AWS does not officially support projects under this org. It is open source and _caveat emptor_. The underlying code behind the adapter is quite simple and uses AWS SDK for CloudWatch and so I provided some guidance to the customer about making some simple code changes and trying a few things with their own build. 
 
 
 
