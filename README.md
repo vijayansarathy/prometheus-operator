@@ -1,41 +1,28 @@
-#### Meeting on March 29,2021 ####
-Purpose of the meeting was to conduct a security review of customer EKS deployment.
+#### Meeting on March 30, 2021 ####
 
 
 #### Attendees ####
-
-Mick Morse (MalwareBytes)
-Jon Paul Lussier (MalwareBytes)
-Josh Funk (MalwareBytes)
-Pavel Zamoshin (MalwareBytes)
-Paul Wagner (MalwareBytes)
-Niazi, Ali (AWS)
-Gupta, Anuj (AWS)
+Suma Potluri (Arlo)
+Satish (Arlo)
+Wedge Martin (AWS)
 Sarathy, Viji (AWS)
 
 
 #### Background ####
-Customer is expanding EKS deployments and working on observability solution for their EKS clusters. They have plans to use EKS/Fargate in future. They are looking for guidance and best practices on EKS observability setup. 
+Customer neeed advice on how best to implement a metric for autoscaling. They've tried a third-party adaptor in the past but it's bitten them due to partial date for the last minute, which adversely impacts their autoscaling in a very bad way.
+They have an equation ( part of the problem ) in CloudWatch to handle the metric, but when one of the inputs hasn't arrived yet, you have incomplete data which manifests itself in a number that's vastly different from what it should be. They're up for scrapping this third party adaptor altogether, but would like guidance on how best to handle this, and make sure that CloudWatch won't return an incomplete metric (or at least use the previous minute if the current minute is incomplete)
 
 
-- Customer has been using ECS for production workloads 
-- Running about 1600 containers on ECS
-- Workloads are spread across more than a dozen ECS clusters.
-- Cited multi-tenancy or the lack thereof as one of the primary reasons for migrating to EKS from ECS
-- They expect to start moving productoion workloads to EKS next quarter
-- They also have workloads that are running non-containerized, some of them running on Beanstalk
-- They are using ECS/Fargate to run some ephemeral tassk and scheduled tasks
-- They have stood up a Dev EKS cluster and are doing a MVP for multi-tenancy
-- Considering various monitoring/loggin solutions
+#### Autoscaling Discussion ####
 
+- Customer is trying to autoscale EKS workloads based on the CloudWatch metric for SQS, namely, **NumberOfMessagesSent**
+- As this is a monotone increasing value, they will have to compute a rate-metric based on this before it can be used for autoscaling. They are doing this using CloudWatch metric math expressions.
+- They are using [CloudWatch Custom Metrics Adapter for Kubernetes](https://github.com/awslabs/k8s-cloudwatch-adapter) to compute this metric and feed it to the Kubernetes HPA for autoscaling.
+- Customer reports that some of the metric values computed by the adapter were erroneous which affected autoscaling.
+- Customer clarified that when they use AWS CLI (aws cloudwatch get-metric-data) to compute the metric values with the same metric expressions, the values were OK.
+- The details of the conversation with the customer and some of my suggestions are capture in this [Github issue](https://github.com/awslabs/k8s-cloudwatch-adapter/issues/76)
 
-#### O11y Discussion ####
-
-- Customer first wanted clarification about what AWS recommends for logging in EKS environment. They had seen the [recent blog post](https://aws.amazon.com/blogs/containers/fluent-bit-integration-in-cloudwatch-container-insights-for-eks) that discusses in detail the beneftis of using FluentBit for log collection. Advised them to start with FluentBit if they starting off with a clean slate
-- Customer wanted clarifications about how to send logs to different destinations such as Kinesis, CloudWatch etc. with FluentBit
-- Customer was not familiar with metrics gathering optiosn using CloudWatch Container Insights. Explained to them how the agent is deployed as a daemonset to collect system metrics and as a Deployment to collect Prometheus metrics.
-- Explained about recent release of Managed Prometheus and Managed Grafana.
-- Suggested that they get started on instrumenting their current ECS workloads using Prometheus client library and test out metrics collection. Pointed out the [recent blog post](https://aws.amazon.com/blogs/opensource/metrics-collection-from-amazon-ecs-using-amazon-managed-service-for-prometheus/) that could be leveraged for gathering Prometheus metrics from ECS workloads.
+Bottom line is that the customer issue happens to be something related to the way the adpater works and they are asking for official suppory from AWS for this adapter because they intend to use it for other autoscaling scenarios in EKS clusters. The project was published under the awslabs Github organization. AFAIK, AWS does not officially support projects under this org. It is open source after all and the code is not complex and so I provided some guidance to the customer about making some simple code changes and trying a few things wit their own build. But it is all strictly _caveat emptor_.
 
 
 
