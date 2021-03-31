@@ -35,7 +35,7 @@ Customer is expanding EKS deployments and working on observability solution for 
 - Customer wanted clarifications about how to send logs to different destinations such as Kinesis, CloudWatch etc. with FluentBit
 - Customer was not familiar with metrics gathering optiosn using CloudWatch Container Insights. Explained to them how the agent is deployed as a daemonset to collect system metrics and as a Deployment to collect Prometheus metrics.
 - Explained about recent release of Managed Prometheus and Managed Grafana.
-- Suggested that they get started on instrumenting their current ECS workloads using Prometheus client library and test out metrics collection. Pointed out the recent blog post that could be leveraged for gathering Prometheus metrics from ECS workloads.
+- Suggested that they get started on instrumenting their current ECS workloads using Prometheus client library and test out metrics collection. Pointed out the [recent blog post](https://aws.amazon.com/blogs/opensource/metrics-collection-from-amazon-ecs-using-amazon-managed-service-for-prometheus/) that could be leveraged for gathering Prometheus metrics from ECS workloads.
 
 
 
