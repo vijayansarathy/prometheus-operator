@@ -1,17 +1,21 @@
-#### Additional Notes from Meeting on March 29, 2021 ####
+#### Additional Notes from Meeting on April 1, 2021 ####
 
-- Customer is setting up multiple EKS environments for their R&D teams. 
-- Right now, every R&D team is doing its own, each on a different path. They want to standardize across all teams using EKS with managed node groups
-- They are planning on provisioning on big cluster and employing the standard approach of using K8s namespaces to segregate team worksloads.
-- They have about 200 Pods deployed in their cluster now. 
-- They are looking into moving applications running from 100s of servers into the EKS cluster
-- Some workloads are being migrated from ECS to EKS.
-- They are using AWS VPC CNI pluging with custom networking.The main driver for this was that they have a large CIDR that is used by many VPCs internally and is not done right and therefore they don't have enough IPs in the primary CIDR of the VPC.
-- They are looking into whether they should use Fargate instead of MNG for EKS.
-- They were concerned about the limit on the number of Fargate Pods per accoubt which is set to 1000. They anticipate easily exceeding this number when all their workloads eventually run on EKS. I clarified that this is just a soft limit which can be increased.
-- The other questions they raised about limits on Fargate Pods is this: Upstream Kubernetes 1.20 supports clusters with no more than 5000 nodes. In Fargate, every Pod that lands on the cluster presents itself as a node to the control plane. Given this, is there going to be a limit of 5000 Fargate Pods? 
-- They were also concerned about the cold start issues on Fargate and asked if anything will be done to address it. 
-- They are SNAT'ing all the Pod traffic with the IP address of the worker node to reduce the number of routable IP addresses. They asked for guidance on best practices around this. I referred them to this [blog](https://aws.amazon.com/blogs/containers/eks-vpc-routable-ip-address-conservation) which is the only referenceable architecture we have on this topic.
+- Customer has been leveraging AWS for production workloads for about 3-4 years. They have also been using containerized workloads for that long.
+- Their containerized workloads on AWS run on ECS.
+- For on-premise compute, they have use Docker on VMs initially and then moved to using Rancher (because they liked the UI)
+- 2 years ago, they started setting stadards around the use of Kubernetes for running containerized workloads.
+- They have been running K8s on-premise using Rancher 2.4/2.5. Worker nodes in the cluster are VMWare instances running RHEL.
+- Plan is to move all Rancher workload to AWS, and refactor them (if needed) to run on EKS
+- All their K8s clusters will be using EKS. 
+- They want to migarate away from running K8s on-premise. So they don't have any interest in EKS-A or EKS-D
+- They are dealing with about 150 applications. Many of them of small applications written in PHP, Node.js using React talking to MySQL or Oracle databases. There are no big monoliths here.
+- User traffic is low on most of the applications
+- One of their big challlenges has been around certificate provisionong and automating that process. They have about 500 domains and they control most of them. They have looked at using Certificate Manager in conjunction with Let's Encrypt but were concerned about the reliability of Cert Manager. 
+- They were also looking for guidance on automating deployments. Some of the applications are static websites provisioned using CFN and Gitlab CI. The code churn in some of the applications is cyclical. They were not familiar with GitOps based deployment strategy and gave them an overview of it and offered to do a demo.
+- Other discussions around securing the deployments revealed that they were not familiar with feature likes IRSA and Security Group for Pods.
+- Timeframe for moving applications to EKS; about 13-15 in 2021.
+- I have advised the account team to get some guidance from the customer about whether they want a deep dive in any particular area as they don't seem to be very familar with EKS. Based on what we hear from them, we will setup subsequent customer engagements.
+- 
 
 
 
