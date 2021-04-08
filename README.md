@@ -1,27 +1,22 @@
-#### Meeting on March 30, 2021 ####
+#### Additional Notes from Meeting on March 29, 2021 ####
+
+- Customer is setting up multiple EKS environments for their R&D teams. 
+- Right now, every R&D team is doing its own, each on a different path. They want to standardize across all teams using EKS with managed node groups
+- They are planning on provisioning on big cluster and employing the standard approach of using K8s namespaces to segregate team worksloads.
+- They have about 200 Pods deployed in their cluster now. 
+- They are looking into moving applications running from 100s of servers into the EKS cluster
+- Some workloads are being migrated from ECS to EKS.
+- They are using AWS VPC CNI pluging with custom networking.The main driver for this was that they have a large CIDR that is used by many VPCs internally and is not done right and therefore they don't have enough IPs in the primary CIDR of the VPC.
+- They are looking into whether they should use Fargate instead of MNG for EKS.
+- They were concerned about the limit on the number of Fargate Pods per accoubt which is set to 1000. They anticipate easily exceeding this number when all their workloads eventually run on EKS. I clarified that this is just a soft limit which can be increased.
+- The other questions they raised about limits on Fargate Pods is this: Upstream Kubernetes 1.20 supports clusters with no more than 5000 nodes. In Fargate, every Pod that lands on the cluster presents itself as a node to the control plane. Given this, is there going to be a limit of 5000 Fargate Pods? 
+- They were also concerned about the cold start issues on Fargate and asked if anything will be done to address it. 
+- They are SNAT'ing all the Pod traffic with the IP address of the worker node to reduce the number of routable IP addresses. They asked for guidance on best practices around this. I referred them to this [blog](https://aws.amazon.com/blogs/containers/eks-vpc-routable-ip-address-conservation) which is the only referenceable architecture we have on this topic.
 
 
-#### Attendees ####
-Suma Potluri (Arlo)
-Satish (Arlo)
-Wedge Martin (AWS)
-Sarathy, Viji (AWS)
 
 
-#### Background ####
-Customer neeed advice on how best to use a CloudWatch metric for autoscaling workloads in EKS. They have been using a third-party tools for autoscaling and reported issues with this tool.
 
-
-#### Autoscaling Discussion ####
-
-- Customer is trying to autoscale EKS workloads based on the CloudWatch metric for SQS, namely, **NumberOfMessagesSent**
-- As this is a monotone increasing value, they will have to compute a rate-metric based on this before it can be used for autoscaling. They are doing this using CloudWatch metric math expressions.
-- The third party tool they are using is none other than [CloudWatch Custom Metrics Adapter for Kubernetes](https://github.com/awslabs/k8s-cloudwatch-adapter) to compute this metric and feed it to the Kubernetes HPA for autoscaling.
-- They reported that some of the metric values computed by the adapter were erroneous which affected autoscaling.
-- They also clarified that when they use AWS CLI (**aws cloudwatch get-metric-data**) to compute the metric values with the same metric expressions, the values were OK.
-- The details of the conversation with the customer and some of my suggestions are capture in this [Github issue](https://github.com/awslabs/k8s-cloudwatch-adapter/issues/76)
-
-Bottom line is that the customer issue happens to be something related to the way the adpater works and they are asking for official support from AWS for this adapter because they intend to use it for other autoscaling scenarios in EKS clusters. The project was published under the **awslabs** Github organization and does not even have maintainer at this time. AFAIK, AWS does not officially support projects under this org. It is open source and _caveat emptor_. The underlying code behind the adapter is quite simple and uses AWS SDK for CloudWatch and so I provided some guidance to the customer about making some simple code changes and trying a few things with their own build. 
 
 
 
