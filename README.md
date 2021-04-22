@@ -16,3 +16,22 @@
 - Timeframe for moving applications to EKS; about 13-15 in 2021.
 - I have advised the account team to get some guidance from the customer about whether they want a deep dive in any particular area as they don't seem to be very familar with EKS. Based on what we hear from them, we will setup subsequent customer engagements.
 
+#### Notes from Meeting on April 22, 2021 ####
+
+This was a follow up to meeting with the customer on April 1.
+The last meeting was supposed to be a general overview and ended up being a bit of deep dive (from the customer's point of view) and so they wanted to have another meeting to go over some of the same topic with some of the members of their DevOps Team.
+
+Ray Jose from DevOps - PRH
+Eric Bruce from Cloud/K8s Team - PRH
+Greg Start from Unix Virtualization - PRH
+Viji Sarathy (AWS) - SSA
+Victor Falconieri (AWS) - AM
+
+- Ray asked about choosing between using Traefik + NLB and an ALB for routing traffic to their EKS services. Pointed out many improvements in the lates AWS Load Balancer Controller and the ability now to handle Ingress resources from multiple namespaces with a single instance of ALB. Pointed out the upper limits on the number of rules per listerner which may necessitate the use of more than 1 ALB depending on the number of service and the granularoty of L7 rules.
+- The discussion again centered around the issue of certificate provisioning. Following the last meeting, I had provided guidance around the support for using multiple TLS certificates in an ALB instance (referred customer to this [blog post](https://aws.amazon.com/blogs/aws/new-application-load-balancer-sni/#ALB) as well). There were more discussions on this topic - about how they might manage the certificate for the more than 500 domains that they handle. Much of the discussion about packing multiple domain names into the same certificate using SANs was orthogonoal to containers/EKS per se. 
+- When deploying an Ingress with TLS in onjunction with Cert Manager and Let's Encrypt, the certificate is made available in a Kubernetes Secret specified in the Ingress. Customer asked how would this work if the Ingress has to use a certificate provisioned by ACM. I pointed out the ability to reference an ACM certificate using the **alb.ingress.kubernetes.io/certificate-arn** annotation in the Ingress, specifying the ARN of one or more certificate managed by AWS Certificate Manager. 
+- Customer asked if I could send them a POC of this which I agreed to.
+- Cutomer wanted to know more about how IRSA feature works under the hood which I explained.
+- They asked if this would work in a cross-account setting. The answert is yes and I pointed them to this [blog](https://aws.amazon.com/blogs/containers/cross-account-iam-roles-for-kubernetes-service-accounts/) that shows them how.
+
+
