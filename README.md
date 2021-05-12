@@ -1,5 +1,15 @@
 #### Additional Notes from Meeting on April 1, 2021 ####
 
+- Customer has been running containerized workloads using Giant Swarm, a managed Kubernetes service.
+- They have about 28 clusters which are split roughly evenly between three environments - Production, QA and Dev
+- There are about 400-500 nodes in all clusters. 
+- Total number of Pods in all clusters is between 5000-6000. Everything runs on AWS.
+- Each cluster runs in a separate VPC. There is a lot of communication between services running in different clusters. To enable this, they are using a Transit Gateway. Even though they can setup the Gateway in such a way as limit who can talk to whom, they have put any such access control mechanisms in place. Every VPC can talk to every other VPC. The nature of their workloads is such that they need this kind of setup.
+- Before moving to Giant Swarm, they were running their K8s workloads in a self-managed Kops cluster. They were using far fewer clusters per environment when it was all self-managed. 
+- The data plane nodes in their Giant Swarm clusters are also managed by the service vendor. They are sort of similar to EKS Managed Nodegroups but don't have the same level of customizability in terms of choosing your own AMI and using cusom bootstrapping scripts via UserData in a Launch Template/Configuration.
+- 
+
+
 - Customer has been leveraging AWS for production workloads for about 3-4 years. They have also been using containerized workloads for that long.
 - Their containerized workloads on AWS run on ECS.
 - For on-premise compute, they have use Docker on VMs initially and then moved to using Rancher (because they liked the UI)
