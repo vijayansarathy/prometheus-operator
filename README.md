@@ -19,6 +19,22 @@
 - They want to adopt the deployment model of provisioning multiple clusters in the same VPC, with cluster assigned a separate set of subnets. 
 
 
+#### Additional Notes from Meeting on May 12, 2021 ####
 
-
+* Containerization efforst started with the use of Docker Swarm
+* Their application for language translation and email templating were the ones that were containerized first. They were two simple microservices with a gateway infront. That's how they gpt started.
+* They expanded to several other services and did the same model of deployment, using. 
+* Their application for language translation and email templating were the ones that were containerized first 2 hosts for HA.
+* Then, they got into Kubernetes. They had a lot of in-house experience with Ansible. They leveraged this and built their self-managed K8s clusters running on EC2.
+* The Production cluster has about 15-20 nodes.
+* Production and non-production are in separate clusters.
+* Provisioning and configuratib of clusters is all done through the use of Ansible scripts which, accordign to their Infra Architect, "looks scary". 
+* Engineer that did all the work in creating these scripts is now gone
+* Certificate management in their cluster is a huge headache
+* They are running Kubernetes 1.17
+* Theye are not using any auto-scaling, neither at the node nor at the pod level. Mentioned that they did not have a good experience with Cluster Autoscaler. The services that run in their K8s cluster are very mission-critical to their SaaS business.
+* The services that run on K8s, according to the Infra Architect, are not well-suited for running on K8s or have not been engineered well to be run well on K8s. Many of them don't have liveness and readiness checks.
+* Their services have not not event been (re)engoineered to use K8s native service discovery mechanism to talk to each other! They make use of Zookeeper for it. This is a service discovery process that was designed before K8s adoption and they continue to use it even today. Services register themselved as a node in Zookeeper with their IP/Port, enabling others to find them in the Zookeeper node hierarchy.
+* 
+* 
 
